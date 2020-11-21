@@ -24,10 +24,10 @@ public class bfsSolver implements PuzzleSolverOrder {
             if(checkIfSolved(current.board))
                 return reconstructSolution(current);
 
-            Move[] validMoves = getValidMoves(current.board, movesOrder);
+            Move[] validMoves = getValidMoves(current.board);
 
-            assert validMoves != null;
-            
+            assert validMoves.length != 0;
+
             for(Move move : validMoves) {
                 int[] nextBoard = applyMove(current.board, move);
                 if(discoveredBoards.contains(nextBoard))
