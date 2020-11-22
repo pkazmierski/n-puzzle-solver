@@ -10,9 +10,10 @@ import static tul.kazmierski.Util.*;
 
 public class bfsSolver implements PuzzleSolverOrder {
 
-    public State solveWithOrder2(int[] initialBoard, Move[] movesOrder) {
+    @Override
+    public State solveWithOrder(ArrayList<Integer> initialBoard, Move[] movesOrder) {
         Queue<State> candidates = new LinkedList<>();
-        Set<int[]> discoveredBoards = new HashSet<>(181440);
+        Set<ArrayList<Integer>> discoveredBoards = new HashSet<>(181440);
 
         candidates.add(new State(initialBoard, null, null));
 
@@ -26,7 +27,7 @@ public class bfsSolver implements PuzzleSolverOrder {
 
             assert validMoves.length != 0;
 
-            int[] nextBoard;
+            ArrayList<Integer> nextBoard;
             for (Move move : validMoves) {
                 nextBoard = applyMove(current.board, move);
                 if (!discoveredBoards.contains(nextBoard)) {
@@ -39,10 +40,8 @@ public class bfsSolver implements PuzzleSolverOrder {
         return null;
     }
 
-    @Override
-
-    public State solveWithOrder(int[] initialBoard, Move[] movesOrder) {
-        Set<int[]> stateSets = new HashSet<>();
+    public State solveWithOrder2(ArrayList<Integer> initialBoard, Move[] movesOrder) {
+        Set<ArrayList<Integer>> stateSets = new HashSet<>();
         Queue<State> queue = new LinkedList<State>();
         State currentState = new State(initialBoard, null, null);
 
@@ -50,7 +49,7 @@ public class bfsSolver implements PuzzleSolverOrder {
             stateSets.add(currentState.board);
             Move[] nodeSuccessors = getValidMoves(currentState.board);
             for (Move n : nodeSuccessors) {
-                int[] newBoard = applyMove(currentState.board, n);
+                ArrayList<Integer> newBoard = applyMove(currentState.board, n);
                 if (stateSets.contains(newBoard))
                     continue;
                 stateSets.add(currentState.board);

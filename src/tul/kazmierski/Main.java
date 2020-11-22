@@ -5,14 +5,13 @@ import tul.kazmierski.solvers.bfsSolver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.stream.IntStream;
 
 import static java.lang.System.exit;
 import static tul.kazmierski.Util.*;
 
 public class Main {
 
-    public static int[] solvedBoard = null;
+    public static ArrayList<Integer> solvedBoard = null;
     public static Dimensions dimensions = null;
     //TODO consider refactoring and moving this elsewhere
     public static Move[] movesOrder = null;
@@ -47,7 +46,7 @@ public class Main {
 
         //set-up session paramaters
         dimensions = parseDimensions(dimensionsArg);
-        int[] initialBoard = parseInitialBoard(rowsArg, dimensions);
+        ArrayList<Integer> initialBoard = parseInitialBoard(rowsArg, dimensions);
         solvedBoard = generateSolvedBoard(initialBoard);
 
         System.out.println("Input board: ");
@@ -63,12 +62,13 @@ public class Main {
         PuzzleSolverOrder puzzleSolverOrder;
         State finalState = null;
 
-        long startTime = System.nanoTime();
+        long startTime = System.currentTimeMillis();
 
         switch (args[0]) {
             case "-b":
             case "--bfs":
                 movesOrder = parseMovesOrder(args[1]);
+                System.out.println("Moves order: " + Arrays.toString(movesOrder));
                 puzzleSolverOrder = new bfsSolver();
                 finalState = puzzleSolverOrder.solveWithOrder(initialBoard, movesOrder);
                 break;
@@ -93,10 +93,11 @@ public class Main {
                 throw new IllegalArgumentException("Incorrect 1st argument");
         }
 
-        long stopTime = System.nanoTime();
-        System.out.println(stopTime - startTime);
+        long stopTime = System.currentTimeMillis();
+        System.out.println("Time to complete: " + (stopTime - startTime) + " ms");
 
-        assert finalState != null;
+        if(finalState == null)
+            throw new IllegalArgumentException("Unknown error. Cannot solve the board");
         Move[] solutionMoves = reconstructSolution(finalState);
         System.out.println(Arrays.toString(solutionMoves));
         visualizeSolution(finalState);

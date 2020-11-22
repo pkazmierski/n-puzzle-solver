@@ -1,10 +1,8 @@
 package tul.kazmierski;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class Util {
 
@@ -20,7 +18,7 @@ public class Util {
         return new Dimensions(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[0]));
     }
 
-    public static int[] parseInitialBoard(ArrayList<String> rowsArg, Dimensions dimensions) {
+    public static ArrayList<Integer> parseInitialBoard(ArrayList<String> rowsArg, Dimensions dimensions) {
         if (rowsArg.size() != dimensions.height)
             throw new IllegalArgumentException("The number of lines does not match the given height");
 
@@ -30,18 +28,18 @@ public class Util {
             for (String numAsChar : splitRow)
                 initialBoard.add(Integer.parseInt(numAsChar));
         }
-        return initialBoard.stream().mapToInt(i -> i).toArray();
+        return initialBoard;
     }
 
-    public static int[] generateSolvedBoard(int[] initialBoard) {
-        int max = Collections.max(Arrays.stream(initialBoard).boxed().collect(Collectors.toList()));
+    public static ArrayList<Integer> generateSolvedBoard(ArrayList<Integer> initialBoard) {
+        int max = Collections.max(initialBoard);
         ArrayList<Integer> tmpSolvedBoard = new ArrayList<>();
         for (int i = 1; i <= max; i++) tmpSolvedBoard.add(i);
         tmpSolvedBoard.add(0);
-        return tmpSolvedBoard.stream().mapToInt(i -> i).toArray();
+        return tmpSolvedBoard;
     }
 
-    public static boolean checkIfSolvable(int[] board) {
+    public static boolean checkIfSolvable(ArrayList<Integer> board) {
         //TODO implement
         return true;
     }
@@ -79,10 +77,15 @@ public class Util {
     }
 
     private static Move[] generateRandomMovesOrder() {
-        Move[] randomMoves = new Move[4];
-        for (int i = 0; i < 4; i++)
-            randomMoves[i] = randomEnum(Move.class);
-        return randomMoves;
+        ArrayList<Move> randomMoves = new ArrayList<>(4);
+
+        randomMoves.add(Move.UP);
+        randomMoves.add(Move.DOWN);
+        randomMoves.add(Move.LEFT);
+        randomMoves.add(Move.RIGHT);
+
+        Collections.shuffle(randomMoves);
+        return randomMoves.toArray(new Move[0]);
     }
 
     public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
@@ -91,8 +94,8 @@ public class Util {
         return clazz.getEnumConstants()[x];
     }
 
-    public static boolean checkIfSolved(int[] board) {
-        return Arrays.equals(board, Main.solvedBoard);
+    public static boolean checkIfSolved(ArrayList<Integer> board) {
+        return board.equals(Main.solvedBoard);
     }
 
     public static Move[] reconstructSolution(State solvedState) {
@@ -112,39 +115,52 @@ public class Util {
         return solutionMoves.toArray(new Move[0]);
     }
 
-    public static int getIndex(int[] arr) {
-        int index = -1;
-        for (int i = 0; i < arr.length; ++i) {
-            if (0 == arr[i]) {
-                index = i;
-                break;
-            }
-        }
-        return index;
+    public static int getIndex(ArrayList<Integer> arr) {
+        return arr.indexOf(0);
+//        int index = -1;
+//        for (int i = 0; i < arr.size(); ++i) {
+//            if (arr.get(i) == 0) {
+//                index = i;
+//                break;
+//            }
+//        }
+//        return index;
     }
 
     //TODO make move a "swap map", i.e. int pair and adjust the function below
-    public static Move[] getValidMoves(int[] board) {
+    public static Move[] getValidMoves(ArrayList<Integer> board) {
         int zeroIndex = getIndex(board);
         int zeroRow = (zeroIndex / Main.dimensions.height) + 1;
         int zeroColumn = (zeroIndex % Main.dimensions.width) + 1;
 
         ArrayList<Move> validMoves = new ArrayList<>();
-        if (zeroRow != 1)
-            validMoves.add(Move.UP);
-        if (zeroRow != Main.dimensions.height)
-            validMoves.add(Move.DOWN);
-        if (zeroColumn != 1)
-            validMoves.add(Move.LEFT);
-        if (zeroColumn != Main.dimensions.width)
-            validMoves.add(Move.RIGHT);
+        for (Move move : Main.movesOrder) {
+            switch (move) {
+                case LEFT:
+                    if (zeroColumn != 1)
+                        validMoves.add(Move.LEFT);
+                    break;
+                case RIGHT:
+                    if (zeroColumn != Main.dimensions.width)
+                        validMoves.add(Move.RIGHT);
+                    break;
+                case UP:
+                    if (zeroRow != 1)
+                        validMoves.add(Move.UP);
+                    break;
+                case DOWN:
+                    if (zeroRow != Main.dimensions.height)
+                        validMoves.add(Move.DOWN);
+                    break;
+            }
+        }
 
         return validMoves.toArray(new Move[0]);
     }
 
     //TODO make move a "swap map", i.e. int pair and adjust the function below
     //ordering starts from 1, not 0
-    public static int[] applyMove(int[] board, Move move) {
+    public static ArrayList<Integer> applyMove(ArrayList<Integer> board, Move move) {
         int zeroIndex = getIndex(board);
         int zeroRow = (zeroIndex / Main.dimensions.height) + 1;
         int zeroColumn = (zeroIndex % Main.dimensions.width) + 1;
@@ -166,9 +182,10 @@ public class Util {
 
         int newZeroIndex = (zeroRow - 1) * Main.dimensions.height + zeroColumn - 1;
 
-        int[] newBoard = board.clone();
-        newBoard[zeroIndex] = newBoard[newZeroIndex];
-        newBoard[newZeroIndex] = 0;
+        ArrayList<Integer> newBoard = (ArrayList<Integer>) board.clone();
+
+        newBoard.set(zeroIndex, newBoard.get(newZeroIndex));
+        newBoard.set(newZeroIndex, 0);
 
         return newBoard;
     }
@@ -177,8 +194,8 @@ public class Util {
         System.out.print("\033[0;31m" + str + "\033[0m");
     }
 
-    public static void printBoard(int[] board) {
-        int max = Collections.max(Arrays.stream(board).boxed().collect(Collectors.toList()));
+    public static void printBoard(ArrayList<Integer> board) {
+        int max = Collections.max(board);
         int maxDigits = (int) (Math.log10(max) + 1);
         int index = 0;
 
@@ -195,22 +212,22 @@ public class Util {
         for (int j = 1; j <= Main.dimensions.height; j++) {
             System.out.print("╠");
             for (int k = 1; k < Main.dimensions.width; k++, index++) {
-                int digits = board[index] == 0 ? 1 : (int) (Math.log10(board[index]) + 1);
+                int digits = board.get(index) == 0 ? 1 : (int) (Math.log10(board.get(index)) + 1);
                 for (int l = maxDigits - digits; l > 0; l--)
                     System.out.print(" ");
-                if (board[index] == 0)
+                if (board.get(index) == 0)
                     printRed("0");
                 else
-                    System.out.print(board[index]);
+                    System.out.print(board.get(index));
                 System.out.print("║");
             }
-            int digits = board[index] == 0 ? 1 : (int) (Math.log10(board[index]) + 1);
+            int digits = board.get(index) == 0 ? 1 : (int) (Math.log10(board.get(index)) + 1);
             for (int l = maxDigits - digits; l > 0; l--)
                 System.out.print(" ");
-            if (board[index] == 0)
+            if (board.get(index) == 0)
                 printRed("0");
             else
-                System.out.print(board[index]);
+                System.out.print(board.get(index));
             System.out.print("╣\n");
             index++;
         }
@@ -230,14 +247,14 @@ public class Util {
         assert solvedState.moveToExecute == null;
 
         State currentState = solvedState;
-        ArrayList<int[]> boards = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> boards = new ArrayList<>();
 
         while (currentState != null) {
             boards.add(currentState.board);
             currentState = currentState.parent;
         }
 
-        System.out.println("Board states:\n");
+        System.out.println("Board states:");
         for (int i = boards.size() - 1; i >= 0; i--) {
             printBoard(boards.get(i));
         }
