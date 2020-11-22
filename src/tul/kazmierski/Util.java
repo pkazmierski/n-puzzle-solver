@@ -33,10 +33,10 @@ public class Util {
         return initialBoard.stream().mapToInt(i -> i).toArray();
     }
 
-    public static int[] getSolvedBoard(int[] initialBoard) {
+    public static int[] generateSolvedBoard(int[] initialBoard) {
         int max = Collections.max(Arrays.stream(initialBoard).boxed().collect(Collectors.toList()));
         ArrayList<Integer> tmpSolvedBoard = new ArrayList<>();
-        for (int i = 1; i < max; i++) tmpSolvedBoard.add(i);
+        for (int i = 1; i <= max; i++) tmpSolvedBoard.add(i);
         tmpSolvedBoard.add(0);
         return tmpSolvedBoard.stream().mapToInt(i -> i).toArray();
     }
@@ -96,15 +96,18 @@ public class Util {
     }
 
     public static Move[] reconstructSolution(State solvedState) {
+        assert solvedState != null;
         assert solvedState.moveToExecute == null;
 
         State currentState = solvedState;
         ArrayList<Move> solutionMoves = new ArrayList<>();
 
         while (currentState.parent != null) {
-            currentState = currentState.parent;
             solutionMoves.add(currentState.moveToExecute);
+            currentState = currentState.parent;
         }
+
+        Collections.reverse(solutionMoves);
 
         return solutionMoves.toArray(new Move[0]);
     }
@@ -123,29 +126,30 @@ public class Util {
     //TODO make move a "swap map", i.e. int pair and adjust the function below
     public static Move[] getValidMoves(int[] board) {
         int zeroIndex = getIndex(board);
-        int zeroRow = (int) Math.floor(zeroIndex / (double) Main.dimensions.height) + 1;
-        int zeroColumn = zeroIndex % Main.dimensions.width;
+        int zeroRow = (zeroIndex / Main.dimensions.height) + 1;
+        int zeroColumn = (zeroIndex % Main.dimensions.width) + 1;
 
         ArrayList<Move> validMoves = new ArrayList<>();
-        if(zeroRow != 1)
+        if (zeroRow != 1)
             validMoves.add(Move.UP);
-        if(zeroRow != Main.dimensions.height)
+        if (zeroRow != Main.dimensions.height)
             validMoves.add(Move.DOWN);
-        if(zeroColumn != 1)
+        if (zeroColumn != 1)
             validMoves.add(Move.LEFT);
-        if(zeroRow != Main.dimensions.width)
+        if (zeroColumn != Main.dimensions.width)
             validMoves.add(Move.RIGHT);
 
         return validMoves.toArray(new Move[0]);
     }
 
     //TODO make move a "swap map", i.e. int pair and adjust the function below
+    //ordering starts from 1, not 0
     public static int[] applyMove(int[] board, Move move) {
         int zeroIndex = getIndex(board);
-        int zeroRow = (int) Math.floor(zeroIndex / (double) Main.dimensions.height) + 1;
-        int zeroColumn = zeroIndex % Main.dimensions.width;
+        int zeroRow = (zeroIndex / Main.dimensions.height) + 1;
+        int zeroColumn = (zeroIndex % Main.dimensions.width) + 1;
 
-        switch(move) {
+        switch (move) {
             case UP:
                 zeroRow -= 1;
                 break;
@@ -160,12 +164,82 @@ public class Util {
                 break;
         }
 
-        int newZeroIndex = (zeroRow - 1) * 3 + zeroColumn - 1;
+        int newZeroIndex = (zeroRow - 1) * Main.dimensions.height + zeroColumn - 1;
 
         int[] newBoard = board.clone();
         newBoard[zeroIndex] = newBoard[newZeroIndex];
         newBoard[newZeroIndex] = 0;
 
         return newBoard;
+    }
+
+    private static void printRed(String str) {
+        System.out.print("\033[0;31m" + str + "\033[0m");
+    }
+
+    public static void printBoard(int[] board) {
+        int max = Collections.max(Arrays.stream(board).boxed().collect(Collectors.toList()));
+        int maxDigits = (int) (Math.log10(max) + 1);
+        int index = 0;
+
+        System.out.print("╔");
+        for (int k = 1; k < Main.dimensions.width; k++) {
+            for (int l = maxDigits; l > 0; l--)
+                System.out.print("═");
+            System.out.print("╦");
+        }
+        for (int l = maxDigits; l > 0; l--)
+            System.out.print("═");
+        System.out.print("╗\n");
+
+        for (int j = 1; j <= Main.dimensions.height; j++) {
+            System.out.print("╠");
+            for (int k = 1; k < Main.dimensions.width; k++, index++) {
+                int digits = board[index] == 0 ? 1 : (int) (Math.log10(board[index]) + 1);
+                for (int l = maxDigits - digits; l > 0; l--)
+                    System.out.print(" ");
+                if (board[index] == 0)
+                    printRed("0");
+                else
+                    System.out.print(board[index]);
+                System.out.print("║");
+            }
+            int digits = board[index] == 0 ? 1 : (int) (Math.log10(board[index]) + 1);
+            for (int l = maxDigits - digits; l > 0; l--)
+                System.out.print(" ");
+            if (board[index] == 0)
+                printRed("0");
+            else
+                System.out.print(board[index]);
+            System.out.print("╣\n");
+            index++;
+        }
+
+        System.out.print("╚");
+        for (int k = 1; k < Main.dimensions.width; k++) {
+            for (int l = maxDigits; l > 0; l--)
+                System.out.print("═");
+            System.out.print("╩");
+        }
+        for (int l = maxDigits; l > 0; l--)
+            System.out.print("═");
+        System.out.print("╝\n");
+    }
+
+    public static void visualizeSolution(State solvedState) {
+        assert solvedState.moveToExecute == null;
+
+        State currentState = solvedState;
+        ArrayList<int[]> boards = new ArrayList<>();
+
+        while (currentState != null) {
+            boards.add(currentState.board);
+            currentState = currentState.parent;
+        }
+
+        System.out.println("Board states:\n");
+        for (int i = boards.size() - 1; i >= 0; i--) {
+            printBoard(boards.get(i));
+        }
     }
 }

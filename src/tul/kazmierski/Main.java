@@ -1,7 +1,11 @@
 package tul.kazmierski;
 
+import tul.kazmierski.solvers.bfsSolver;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 import static java.lang.System.exit;
 import static tul.kazmierski.Util.*;
@@ -18,6 +22,7 @@ public class Main {
      * Required arguments in order:
      * 1. Search strategy
      * 2. Search strategy argument, i.e. order or heuristic id
+     *
      * @param args Arguments passed to the program, as described above.
      */
     public static void main(String[] args) {
@@ -43,17 +48,29 @@ public class Main {
         //set-up session paramaters
         dimensions = parseDimensions(dimensionsArg);
         int[] initialBoard = parseInitialBoard(rowsArg, dimensions);
-        solvedBoard = getSolvedBoard(initialBoard);
+        solvedBoard = generateSolvedBoard(initialBoard);
+
+        System.out.println("Input board: ");
+        printBoard(initialBoard);
+        System.out.println("Solved board: ");
+        printBoard(solvedBoard);
 
         if (!checkIfSolvable(initialBoard)) {
             System.err.println("The board is not solvable. Aborting...");
             exit(1);
         }
 
+        PuzzleSolverOrder puzzleSolverOrder;
+        State finalState = null;
+
+        long startTime = System.nanoTime();
+
         switch (args[0]) {
             case "-b":
             case "--bfs":
                 movesOrder = parseMovesOrder(args[1]);
+                puzzleSolverOrder = new bfsSolver();
+                finalState = puzzleSolverOrder.solveWithOrder(initialBoard, movesOrder);
                 break;
             case "-d":
             case "--dfs":
@@ -72,7 +89,16 @@ public class Main {
             case "-s":
             case "--sma":
                 break;
+            default:
+                throw new IllegalArgumentException("Incorrect 1st argument");
         }
 
+        long stopTime = System.nanoTime();
+        System.out.println(stopTime - startTime);
+
+        assert finalState != null;
+        Move[] solutionMoves = reconstructSolution(finalState);
+        System.out.println(Arrays.toString(solutionMoves));
+        visualizeSolution(finalState);
     }
 }

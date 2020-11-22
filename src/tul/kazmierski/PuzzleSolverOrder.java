@@ -8,5 +8,5 @@ public interface PuzzleSolverOrder {
      * @param movesOrder Order in which the moves will be checked and subsequent nodes visited.
      * @return Order of moves which has to be executed on the initial board in order to solve the puzzle or null if not solvable.
      */
-    public Move[] solveWithOrder(int[] initialBoard, Move[] movesOrder);
+    public State solveWithOrder(int[] initialBoard, Move[] movesOrder);
 }

@@ -3,7 +3,7 @@ A simple command-line Java program for solving the n-puzzle using various search
 
 | Search strategy | Implemented |
 |-----|---|
-|  BFS   | ❌  |
+|  BFS   | ✔️|
 |   DFS  |  ❌ |
 |  IDFS   |  ❌ |
 |   Best-first search  |❌   |
