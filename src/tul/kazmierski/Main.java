@@ -1,7 +1,7 @@
 package tul.kazmierski;
 
 import tul.kazmierski.heuristics.ManhattanDistanceHeuristic;
-import tul.kazmierski.solvers.aStarSolver;
+import tul.kazmierski.solvers.bestFirstSolver;
 import tul.kazmierski.solvers.bfsSolver;
 import tul.kazmierski.solvers.dfsSolver;
 
@@ -90,14 +90,15 @@ public class Main {
                 break;
             case "-h":
             case "--bf":
+                movesOrder = parseMovesOrder("URDL");
+                System.out.println("Moves order: " + Arrays.toString(movesOrder));
+                puzzleSolverHeuristic = new bestFirstSolver();
+                //FIXME don't call the function with a hardcoded heuristic
+                finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new ManhattanDistanceHeuristic());
                 break;
             case "-a":
             case "--astar":
                 movesOrder = parseMovesOrder("R");
-                System.out.println("Moves order: " + Arrays.toString(movesOrder));
-                puzzleSolverHeuristic = new aStarSolver();
-                //FIXME don't call the function with a hardcoded heuristic
-                finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new ManhattanDistanceHeuristic());
                 break;
             case "-s":
             case "--sma":

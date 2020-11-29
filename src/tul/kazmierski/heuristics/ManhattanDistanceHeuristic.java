@@ -18,7 +18,7 @@ public class ManhattanDistanceHeuristic implements Heuristic {
         return manhattanSum;
     }
 
-    private static int calculateManhattanDistance(ArrayList<Integer> board, int index, int value) {
+    public static int calculateManhattanDistance(ArrayList<Integer> board, int index, int value) {
         int currentRow = (index / Main.dimensions.height) + 1;
         int currentColumn = (index % Main.dimensions.width) + 1;
 

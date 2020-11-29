@@ -10,7 +10,9 @@ public class MisplacedTilesHeuristic implements Heuristic {
     public int getRank(ArrayList<Integer> board) {
         int misplacedCounter = 0;
         for(int i = 0; i < board.size(); i++) {
-            if(!board.get(i).equals(Main.solvedBoard.get(i)))
+            int currentBoardValue = board.get(i);
+            int solvedBoardValue = Main.solvedBoard.get(i);
+            if(currentBoardValue != solvedBoardValue && currentBoardValue != 0)
                 misplacedCounter++;
         }
         return misplacedCounter;

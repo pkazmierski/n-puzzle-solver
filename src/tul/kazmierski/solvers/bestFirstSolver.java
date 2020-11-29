@@ -6,7 +6,7 @@ import java.util.*;
 
 import static tul.kazmierski.Util.*;
 
-public class aStarSolver implements PuzzleSolverHeuristic {
+public class bestFirstSolver implements PuzzleSolverHeuristic {
     @Override
     public State solveWithHeuristic(ArrayList<Integer> initialBoard, Heuristic heuristic) {
         PriorityQueue<RankedState> candidates = new PriorityQueue<>(rankedStateComparator);

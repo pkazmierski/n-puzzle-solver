@@ -48,6 +48,8 @@ public abstract class Util {
         int inversions = 0;
         for (int i = 0; i < board.size(); i++) {
             int val = board.get(i);
+            if(val == 0)
+                continue;
 
             for (var j = (i + 1); j < board.size(); j++) {
                 if (board.get(j) < val && board.get(j) != 0) {
@@ -58,7 +60,14 @@ public abstract class Util {
         return inversions;
     }
 
-
+    /*
+      If N is odd, then puzzle instance is solvable if number of inversions is even in the input state.
+      If N is even, puzzle instance is solvable if
+        1) the blank is on an even row counting from the bottom (second-last, fourth-last, etc.) and number of inversions is odd.
+        2) the blank is on an odd row counting from the bottom (last, third-last, fifth-last, etc.) and number of inversions is even.
+      For all other cases, the puzzle instance is not solvable.
+      Note: subconditions 1) and 2) can be flipped, i.e. blank on ODD row counting from the TOP and number of inversions is odd (this doesn't change)
+    */
     public static boolean checkIfSolvable(ArrayList<Integer> board) {
         int inversions = countInversions(board);
 
@@ -68,9 +77,9 @@ public abstract class Util {
             boolean zeroEvenRow = zeroRow % 2 == 0;
 
             if(zeroEvenRow)
-                return inversions % 2 == 1; // num of inversions is odd
-            else
                 return inversions % 2 == 0; // num of inversions is even
+            else
+                return inversions % 2 == 1; // num of inversions is odd
         } else { // N is odd
             return inversions % 2 == 0;
         }
