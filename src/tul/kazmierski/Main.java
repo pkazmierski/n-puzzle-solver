@@ -1,6 +1,6 @@
 package tul.kazmierski;
 
-import tul.kazmierski.heuristics.InversionsHeuristic;
+import tul.kazmierski.heuristics.ManhattanDistanceHeuristic;
 import tul.kazmierski.solvers.aStarSolver;
 import tul.kazmierski.solvers.bfsSolver;
 import tul.kazmierski.solvers.dfsSolver;
@@ -97,7 +97,7 @@ public class Main {
                 System.out.println("Moves order: " + Arrays.toString(movesOrder));
                 puzzleSolverHeuristic = new aStarSolver();
                 //FIXME don't call the function with a hardcoded heuristic
-                finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new InversionsHeuristic());
+                finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new ManhattanDistanceHeuristic());
                 break;
             case "-s":
             case "--sma":
