@@ -1,6 +1,7 @@
 package tul.kazmierski;
 
 import tul.kazmierski.solvers.bfsSolver;
+import tul.kazmierski.solvers.dfsSolver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ public class Main {
     public static Dimensions dimensions = null;
     //TODO consider refactoring and moving this elsewhere
     public static Move[] movesOrder = null;
+    public static int visitedCounter = 0;
 
 
     /**
@@ -75,6 +77,9 @@ public class Main {
             case "-d":
             case "--dfs":
                 movesOrder = parseMovesOrder(args[1]);
+                System.out.println("Moves order: " + Arrays.toString(movesOrder));
+                puzzleSolverOrder = new dfsSolver();
+                finalState = puzzleSolverOrder.solveWithOrder(initialBoard, movesOrder);
                 break;
             case "-i":
             case "--idfs":
@@ -95,11 +100,12 @@ public class Main {
 
         long stopTime = System.currentTimeMillis();
         System.out.println("Time to complete: " + (stopTime - startTime) + " ms");
+        System.out.println("Nodes visited: " + visitedCounter);
 
         if(finalState == null)
             throw new IllegalArgumentException("Unknown error. Cannot solve the board");
         Move[] solutionMoves = reconstructSolution(finalState);
         System.out.println(Arrays.toString(solutionMoves));
-        visualizeSolution(finalState);
+//        visualizeSolution(finalState);
     }
 }

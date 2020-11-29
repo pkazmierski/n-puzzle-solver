@@ -9,17 +9,17 @@ import java.util.*;
 
 import static tul.kazmierski.Util.*;
 
-public class bfsSolver implements PuzzleSolverOrder {
+public class dfsSolver implements PuzzleSolverOrder {
 
     @Override
     public State solveWithOrder(ArrayList<Integer> initialBoard, Move[] movesOrder) {
-        Queue<State> candidates = new LinkedList<>();
+        Deque<State> candidates = new LinkedList<>();
         Set<ArrayList<Integer>> discoveredBoards = new HashSet<>(181440);
 
         candidates.add(new State(initialBoard, null, null));
 
         while (candidates.size() > 0) {
-            State current = candidates.poll();
+            State current = candidates.pollLast();
             Main.visitedCounter++;
 
             if (checkIfSolved(current.board))

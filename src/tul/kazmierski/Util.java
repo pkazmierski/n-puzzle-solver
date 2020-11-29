@@ -2,7 +2,6 @@ package tul.kazmierski;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 public class Util {
 
@@ -38,6 +37,7 @@ public class Util {
         tmpSolvedBoard.add(0);
         return tmpSolvedBoard;
     }
+
 
     public static boolean checkIfSolvable(ArrayList<Integer> board) {
         //TODO implement
@@ -86,12 +86,6 @@ public class Util {
 
         Collections.shuffle(randomMoves);
         return randomMoves.toArray(new Move[0]);
-    }
-
-    public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
-        Random random = new Random();
-        int x = random.nextInt(clazz.getEnumConstants().length);
-        return clazz.getEnumConstants()[x];
     }
 
     public static boolean checkIfSolved(ArrayList<Integer> board) {
@@ -182,7 +176,8 @@ public class Util {
 
         int newZeroIndex = (zeroRow - 1) * Main.dimensions.height + zeroColumn - 1;
 
-        ArrayList<Integer> newBoard = (ArrayList<Integer>) board.clone();
+        //TODO verify if that doesn't cause problems
+        ArrayList<Integer> newBoard = new ArrayList<>(board);
 
         newBoard.set(zeroIndex, newBoard.get(newZeroIndex));
         newBoard.set(newZeroIndex, 0);
