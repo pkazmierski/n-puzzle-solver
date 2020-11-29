@@ -1,5 +1,7 @@
 package tul.kazmierski;
 
+import tul.kazmierski.heuristics.InversionsHeuristic;
+import tul.kazmierski.solvers.aStarSolver;
 import tul.kazmierski.solvers.bfsSolver;
 import tul.kazmierski.solvers.dfsSolver;
 
@@ -62,6 +64,7 @@ public class Main {
         }
 
         PuzzleSolverOrder puzzleSolverOrder;
+        PuzzleSolverHeuristic puzzleSolverHeuristic;
         State finalState = null;
 
         long startTime = System.currentTimeMillis();
@@ -90,6 +93,11 @@ public class Main {
                 break;
             case "-a":
             case "--astar":
+                movesOrder = parseMovesOrder("R");
+                System.out.println("Moves order: " + Arrays.toString(movesOrder));
+                puzzleSolverHeuristic = new aStarSolver();
+                //FIXME don't call the function with a hardcoded heuristic
+                finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new InversionsHeuristic());
                 break;
             case "-s":
             case "--sma":
@@ -105,6 +113,7 @@ public class Main {
         if(finalState == null)
             throw new IllegalArgumentException("Unknown error. Cannot solve the board");
         Move[] solutionMoves = reconstructSolution(finalState);
+        System.out.println("Number of moves: " + solutionMoves.length);
         System.out.println(Arrays.toString(solutionMoves));
 //        visualizeSolution(finalState);
     }

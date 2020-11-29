@@ -2,8 +2,13 @@ package tul.kazmierski;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
-public class Util {
+public abstract class Util {
+    public static Comparator<RankedState> rankedStateComparator = (o1, o2) -> {
+        if(o1.rank == o2.rank) return 0;
+        else return o1.rank > o2.rank ? 1 : -1;
+    };
 
     public static Dimensions parseDimensions(String dimensionsArg) {
         String[] dimensions = dimensionsArg.split(" ");

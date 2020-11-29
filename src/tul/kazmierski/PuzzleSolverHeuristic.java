@@ -9,5 +9,5 @@ public interface PuzzleSolverHeuristic {
      * @param heuristic ID of the heuristic to be used.
      * @return Order of moves which has to be executed on the initial board in order to solve the puzzle or null if not solvable.
      */
-    public Move[] solveWithHeuristic(ArrayList<Integer> initialBoard, Heuristic heuristic);
+    public State solveWithHeuristic(ArrayList<Integer> initialBoard, Heuristic heuristic);
 }
