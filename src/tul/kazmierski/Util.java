@@ -11,8 +11,9 @@ public class Util {
         if (dimensions.length != 2)
             throw new IllegalArgumentException("Dimensions must be in the format 'width height'");
         // optionally enable MxN boards, instead of just NxN
-//        if (!dimensions[0].equals(dimensions[1]))
-//            throw new IllegalArgumentException("Width must be equal to height");
+        // NOTE: this would also require changes in the checkIfSolvable function
+        if (!dimensions[0].equals(dimensions[1]))
+            throw new IllegalArgumentException("Width must be equal to height");
 
         return new Dimensions(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[0]));
     }
@@ -38,10 +39,36 @@ public class Util {
         return tmpSolvedBoard;
     }
 
+    public static int countInversions(ArrayList<Integer> board) {
+        int inversions = 0;
+        for (int i = 0; i < board.size(); i++) {
+            int val = board.get(i);
+
+            for (var j = (i + 1); j < board.size(); j++) {
+                if (board.get(j) < val && board.get(j) != 0) {
+                    inversions++;
+                }
+            }
+        }
+        return inversions;
+    }
+
 
     public static boolean checkIfSolvable(ArrayList<Integer> board) {
-        //TODO implement
-        return true;
+        int inversions = countInversions(board);
+
+        if (Main.dimensions.width % 2 == 0) { // N is even
+            int zeroIndex = board.indexOf(0);
+            int zeroRow = (zeroIndex / Main.dimensions.height) + 1;
+            boolean zeroEvenRow = zeroRow % 2 == 0;
+
+            if(zeroEvenRow)
+                return inversions % 2 == 1; // num of inversions is odd
+            else
+                return inversions % 2 == 0; // num of inversions is even
+        } else { // N is odd
+            return inversions % 2 == 0;
+        }
     }
 
     public static Move[] parseMovesOrder(String movesOrder) {
