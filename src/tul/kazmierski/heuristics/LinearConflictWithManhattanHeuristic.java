@@ -22,13 +22,60 @@ public class LinearConflictWithManhattanHeuristic implements Heuristic {
         return manhattanSum + 2 * linearConflicts;
     }
 
+    public static int countAllLinearConflicts(ArrayList<Integer> board) {
+        int conflictCounter = 0;
+
+        //rows, horizontal conflict
+        for (int row = 1; row <= Main.dimensions.height; row++) {
+            int max = -1;
+            for (int col = 1; col <= Main.dimensions.width; col++) {
+                int index = (row - 1) * Main.dimensions.height + col - 1;
+                int value = board.get(index);
+
+                if (value == 0) continue;
+
+                int goalRow = ((value - 1) / Main.dimensions.width) + 1;
+
+                if (row == goalRow) {
+                    if (value > max)
+                        max = value;
+                    else
+                        conflictCounter++;
+                }
+            }
+        }
+
+        //columns, vertical conflict
+        for (int col = 1; col <= Main.dimensions.width; col++) {
+            int max = -1;
+            for (int row = 1; row <= Main.dimensions.height; row++) {
+                int index = (row - 1) * Main.dimensions.width + col - 1;
+                int value = board.get(index);
+
+                if (value == 0) continue;
+
+                int goalColumn = ((value - 1) % Main.dimensions.height) + 1;
+
+                if (col == goalColumn) {
+                    if (value > max)
+                        max = value;
+                    else
+                        conflictCounter++;
+                }
+            }
+        }
+
+        return conflictCounter;
+    }
+
+
     //Two tiles tj and tk are in a linear conflict if:
     // tj and tk are in the same line,
     // the goal positions of tj and tk are both in that line,
     // tj is to the right of tk
     // and goal position of tj is to the left of the goal position of tk.
     // tj = target, tk = base
-    public static int countAllLinearConflicts(ArrayList<Integer> board) {
+    public static int countAllLinearConflicts2(ArrayList<Integer> board) {
 //        Set<Map.Entry<Integer, Integer>> linearConflicts = new HashSet<>();
         int conflictCounter = 0;
 
@@ -54,7 +101,7 @@ public class LinearConflictWithManhattanHeuristic implements Heuristic {
                 }
             }
         }
-        
+
         //columns
         for (int i = 1; i <= Main.dimensions.width; i++) {
             //row of the base tile (left-hand operand)
@@ -77,8 +124,8 @@ public class LinearConflictWithManhattanHeuristic implements Heuristic {
                 }
             }
         }
-        
-        
+
+
 //        return linearConflicts.size();
         return conflictCounter;
     }
