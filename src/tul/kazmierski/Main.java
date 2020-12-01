@@ -1,10 +1,8 @@
 package tul.kazmierski;
 
+import tul.kazmierski.heuristics.LinearConflictWithManhattanHeuristic;
 import tul.kazmierski.heuristics.ManhattanDistanceHeuristic;
-import tul.kazmierski.solvers.AStarSolver;
-import tul.kazmierski.solvers.bestFirstSolver;
-import tul.kazmierski.solvers.bfsSolver;
-import tul.kazmierski.solvers.dfsSolver;
+import tul.kazmierski.solvers.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,8 +84,11 @@ public class Main {
                 finalState = puzzleSolverOrder.solveWithOrder(initialBoard, movesOrder);
                 break;
             case "-i":
-            case "--idfs":
+            case "--iddfs":
                 movesOrder = parseMovesOrder(args[1]);
+                System.out.println("Moves order: " + Arrays.toString(movesOrder));
+                puzzleSolverOrder = new iddfsSolver();
+                finalState = puzzleSolverOrder.solveWithOrder(initialBoard, movesOrder);
                 break;
             case "-h":
             case "--bf":
@@ -95,7 +96,7 @@ public class Main {
                 System.out.println("Moves order: " + Arrays.toString(movesOrder));
                 puzzleSolverHeuristic = new bestFirstSolver();
                 //FIXME don't call the function with a hardcoded heuristic
-                finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new ManhattanDistanceHeuristic());
+                finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new LinearConflictWithManhattanHeuristic());
                 break;
             case "-a":
             case "--astar":
@@ -107,6 +108,11 @@ public class Main {
                 break;
             case "-s":
             case "--sma":
+                movesOrder = parseMovesOrder("DULR");
+                System.out.println("Moves order: " + Arrays.toString(movesOrder));
+                puzzleSolverHeuristic = new SMAStarSolver();
+                //FIXME don't call the function with a hardcoded heuristic
+                finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new ManhattanDistanceHeuristic());
                 break;
             default:
                 throw new IllegalArgumentException("Incorrect 1st argument");
