@@ -6,6 +6,7 @@ import tul.kazmierski.solvers.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import static java.lang.System.exit;
@@ -18,6 +19,7 @@ public class Main {
     //TODO consider refactoring and moving this elsewhere
     public static Move[] movesOrder = null;
     public static int visitedCounter = 0;
+    public static HashMap<Move, Move> oppositeMoves = new HashMap<>();
 
 
     /**
@@ -28,12 +30,17 @@ public class Main {
      * @param args Arguments passed to the program, as described above.
      */
     public static void main(String[] args) {
-        if (args.length != 2)
-            throw new IllegalArgumentException("Need 2 arguments. Got " + args.length);
+        if (args.length != 2 && args.length != 3)
+            throw new IllegalArgumentException("Need 2 or 3 arguments. Got " + args.length);
 
         Scanner sc = new Scanner(System.in);
         String dimensionsArg;
         ArrayList<String> rowsArg = new ArrayList<>();
+
+        oppositeMoves.put(Move.DOWN, Move.UP);
+        oppositeMoves.put(Move.UP, Move.DOWN);
+        oppositeMoves.put(Move.LEFT, Move.RIGHT);
+        oppositeMoves.put(Move.RIGHT, Move.LEFT);
 
         //parse arguments as Strings
         if (sc.hasNextLine())
@@ -67,49 +74,40 @@ public class Main {
         State finalState = null;
 
         long startTime = System.currentTimeMillis();
+        movesOrder = parseMovesOrder(args[1]);
+        System.out.println("Moves order: " + Arrays.toString(movesOrder));
+
 
         switch (args[0]) {
             case "-b":
             case "--bfs":
-                movesOrder = parseMovesOrder(args[1]);
-                System.out.println("Moves order: " + Arrays.toString(movesOrder));
                 puzzleSolverOrder = new bfsSolver();
                 finalState = puzzleSolverOrder.solveWithOrder(initialBoard, movesOrder);
                 break;
             case "-d":
             case "--dfs":
-                movesOrder = parseMovesOrder(args[1]);
-                System.out.println("Moves order: " + Arrays.toString(movesOrder));
                 puzzleSolverOrder = new dfsSolver();
                 finalState = puzzleSolverOrder.solveWithOrder(initialBoard, movesOrder);
                 break;
             case "-i":
             case "--iddfs":
-                movesOrder = parseMovesOrder(args[1]);
-                System.out.println("Moves order: " + Arrays.toString(movesOrder));
                 puzzleSolverOrder = new iddfsSolver();
                 finalState = puzzleSolverOrder.solveWithOrder(initialBoard, movesOrder);
                 break;
             case "-h":
             case "--bf":
-                movesOrder = parseMovesOrder("URDL");
-                System.out.println("Moves order: " + Arrays.toString(movesOrder));
                 puzzleSolverHeuristic = new bestFirstSolver();
                 //FIXME don't call the function with a hardcoded heuristic
                 finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new LinearConflictWithManhattanHeuristic());
                 break;
             case "-a":
             case "--astar":
-                movesOrder = parseMovesOrder("DULR");
-                System.out.println("Moves order: " + Arrays.toString(movesOrder));
                 puzzleSolverHeuristic = new AStarSolver();
                 //FIXME don't call the function with a hardcoded heuristic
                 finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new ManhattanDistanceHeuristic());
                 break;
             case "-s":
             case "--sma":
-                movesOrder = parseMovesOrder("DULR");
-                System.out.println("Moves order: " + Arrays.toString(movesOrder));
                 puzzleSolverHeuristic = new SMAStarSolver();
                 //FIXME don't call the function with a hardcoded heuristic
                 finalState = puzzleSolverHeuristic.solveWithHeuristic(initialBoard, new ManhattanDistanceHeuristic());

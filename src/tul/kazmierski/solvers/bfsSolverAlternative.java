@@ -20,7 +20,7 @@ public class bfsSolverAlternative implements PuzzleSolverOrder {
         while (currentState != null && !checkIfSolved(currentState.board)) {
             stateSets.add(currentState.board);
             Main.visitedCounter++;
-            Move[] nodeSuccessors = getValidMoves(currentState.board);
+            Move[] nodeSuccessors = getValidMoves(currentState.board, currentState.moveToExecute);
             for (Move n : nodeSuccessors) {
                 ArrayList<Integer> newBoard = applyMove(currentState.board, n);
                 if (stateSets.contains(newBoard))

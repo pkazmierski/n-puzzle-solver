@@ -5,13 +5,11 @@ import tul.kazmierski.Move;
 import tul.kazmierski.PuzzleSolverOrder;
 import tul.kazmierski.State;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
+import java.util.*;
 
 import static tul.kazmierski.Util.*;
 
-public class iddfsSolver implements PuzzleSolverOrder {
+public class iddfsSolverAlternative2 implements PuzzleSolverOrder {
     private class SpecialState {
         State state;
         boolean remaining; //does this state have children?
@@ -27,19 +25,18 @@ public class iddfsSolver implements PuzzleSolverOrder {
         State initialState = new State(initialBoard, null, null);
         for (int maxDepth = 0; ; maxDepth++) {
             State result = DLS(initialState, maxDepth);
-            if (result != null) {
-                printMemory();
+            if (result != null)
                 return result;
-            }
         }
     }
 
     //Depth Limited Search (DFS)
     private State DLS(State start, int maxDepth) {
         Deque<State> candidates = new LinkedList<>();
+        Set<ArrayList<Integer>> discoveredBoards = new HashSet<>(181440);
         candidates.add(start);
 
-        while (true) {
+        while (candidates.size() != 0) {
             State current = candidates.pollLast();
             Main.visitedCounter++;
 
@@ -48,9 +45,6 @@ public class iddfsSolver implements PuzzleSolverOrder {
             if (current.depth == maxDepth) {
                 if (checkIfSolved(current.board))
                     return current;
-                if (candidates.size() == 0) {
-                    return null;
-                }
                 continue;
             }
 
@@ -59,9 +53,13 @@ public class iddfsSolver implements PuzzleSolverOrder {
             ArrayList<Integer> nextBoard;
             for (Move move : validMoves) {
                 nextBoard = applyMove(current.board, move);
-                State nextState = new State(nextBoard, current, move);
-                candidates.add(nextState);
+                if (!discoveredBoards.contains(nextBoard)) {
+                    State nextState = new State(nextBoard, current, move);
+                    candidates.add(nextState);
+                    discoveredBoards.add(nextBoard);
+                }
             }
         }
+        return null;
     }
 }

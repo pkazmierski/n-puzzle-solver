@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import static tul.kazmierski.Main.oppositeMoves;
+
 public abstract class Util {
     public static Comparator<RankedState> rankedStateComparator = (o1, o2) -> {
         if(o1.rank == o2.rank) return 0;
@@ -117,6 +119,13 @@ public abstract class Util {
         }
     }
 
+    public static void printMemory() {
+        Runtime runtime = Runtime.getRuntime();
+        runtime.gc(); //garbage collector frees up space
+        long memory = runtime.totalMemory() - runtime.freeMemory(); //calculate memory
+        System.out.println("Memory Used: " + memory / 1024L + " kB");
+    }
+
     private static Move[] generateRandomMovesOrder() {
         ArrayList<Move> randomMoves = new ArrayList<>(4);
 
@@ -163,13 +172,15 @@ public abstract class Util {
     }
 
     //TODO make move a "swap map", i.e. int pair and adjust the function below
-    public static Move[] getValidMoves(ArrayList<Integer> board) {
+    public static Move[] getValidMoves(ArrayList<Integer> board, Move parentMove) {
         int zeroIndex = getIndex(board);
         int zeroRow = (zeroIndex / Main.dimensions.height) + 1;
         int zeroColumn = (zeroIndex % Main.dimensions.width) + 1;
 
         ArrayList<Move> validMoves = new ArrayList<>();
         for (Move move : Main.movesOrder) {
+            if(move == oppositeMoves.get(parentMove))
+                continue;
             switch (move) {
                 case LEFT:
                     if (zeroColumn != 1)

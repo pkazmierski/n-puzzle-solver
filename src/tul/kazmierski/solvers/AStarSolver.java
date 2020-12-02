@@ -24,10 +24,12 @@ public class AStarSolver implements PuzzleSolverHeuristic {
             State current = currentRankedState.state;
             Main.visitedCounter++;
 
-            if (checkIfSolved(current.board))
+            if (checkIfSolved(current.board)) {
+                printMemory();
                 return current;
+            }
 
-            Move[] validMoves = getValidMoves(current.board);
+            Move[] validMoves = getValidMoves(current.board, current.moveToExecute);
 
             assert validMoves.length != 0;
 

@@ -9,7 +9,7 @@ import static tul.kazmierski.Util.*;
 public class SMAStarSolver implements PuzzleSolverHeuristic {
     @Override
     public State solveWithHeuristic(ArrayList<Integer> initialBoard, Heuristic heuristic) {
-        int maxCapacity = 30;
+        int maxCapacity = 500;
 
         PriorityQueue<RankedState> candidates = new PriorityQueue<>(rankedStateComparator);
 
@@ -25,7 +25,7 @@ public class SMAStarSolver implements PuzzleSolverHeuristic {
             State current = currentRankedState.state;
             Main.visitedCounter++;
 
-            Move[] validMoves = getValidMoves(current.board);
+            Move[] validMoves = getValidMoves(current.board, current.moveToExecute);
             int lowestForgottenRank = Integer.MAX_VALUE;
 
             ArrayList<Integer> nextBoard;
@@ -34,8 +34,10 @@ public class SMAStarSolver implements PuzzleSolverHeuristic {
                 nextBoard = applyMove(current.board, move);
                 State nextState = new State(nextBoard, current, move);
                 RankedState nextRankedState;
-                if (checkIfSolved(nextBoard))
-                    return current;
+                if (checkIfSolved(nextBoard)) {
+                    printMemory();
+                    return nextState;
+                }
                 else {
                     nextRankedState = new RankedState(nextState,
                             Math.max(currentRankedState.rank, heuristic.getRank(nextState.board) + nextState.depth));
