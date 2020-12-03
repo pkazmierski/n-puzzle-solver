@@ -20,7 +20,6 @@ public class Main {
 
     public static ArrayList<Integer> solvedBoard = null;
     public static Dimensions dimensions = null;
-    //TODO consider refactoring and moving this elsewhere
     public static Move[] movesOrder = null;
     public static long startTime = 0;
     public static long endTime = 0;
@@ -32,9 +31,21 @@ public class Main {
 
     /**
      * Required arguments in order:
-     * 1. Search strategy
-     * 2. Search strategy argument, i.e. order or heuristic id
-     *
+     * 1. Search strategy (algorithm) - refer to one of the switches below
+     * 2. Moves order, i.e. LUDR  checks first left, then up, then down and finally right; use just R for random
+     * 3. Heuristic ID - 1-4 (refer to gerHeuristic); put anything if using BFS, DFS or IDDFS
+     * 4. File name - for proper output for report, not actually used to read from it
+     * Input is done via stdin, first two columns are "width height"
+     * NOTE: only NxN boards are supported now
+     * The next lines are space separated values for each row, e.g. "4 0 5"
+     * 0 = blank tile
+     * By default the output is to stdout, single line, tab separated value in this order:
+     * Heuristic, Moves order, Time (ms), Visited nodes, Memory (KB), Exit status, Moves count, Moves list
+     * Solving is abandoned if
+     * a) program has less than 1 MB of memory in JVM
+     * b) it takes longer than 60 seconds to solve
+     * Before solving solvability is checked; if the board is unsolvable, the program is terminated
+     * By default visualizations are enabled, comment out visualizeSolution(finalState); to disable them
      * @param args Arguments passed to the program, as described above.
      */
     public static void main(String[] args) {
@@ -219,7 +230,9 @@ public class Main {
 
 //        System.out.println("Number of moves: " + solutionMoves.length);
 //        System.out.println(Arrays.toString(solutionMoves));
-//        visualizeSolution(finalState);
+        if (finalState != null) {
+            visualizeSolution(finalState);
+        }
     }
 
     private static void reportMode(String[] args) {
