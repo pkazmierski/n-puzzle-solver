@@ -228,7 +228,6 @@ public abstract class Util {
 
         int newZeroIndex = (zeroRow - 1) * Main.dimensions.height + zeroColumn - 1;
 
-        //TODO verify if that doesn't cause problems
         ArrayList<Integer> newBoard = new ArrayList<>(board);
 
         newBoard.set(zeroIndex, newBoard.get(newZeroIndex));
