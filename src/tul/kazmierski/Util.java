@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import static tul.kazmierski.Main.oppositeMoves;
+import static tul.kazmierski.Main.usedMemoryKb;
 
 public abstract class Util {
     public static Comparator<RankedState> rankedStateComparator = (o1, o2) -> {
@@ -119,11 +120,10 @@ public abstract class Util {
         }
     }
 
-    public static void printMemory() {
+    public static void setUsedMemory() {
         Runtime runtime = Runtime.getRuntime();
         runtime.gc(); //garbage collector frees up space
-        long memory = runtime.totalMemory() - runtime.freeMemory(); //calculate memory
-        System.out.println("Memory Used: " + memory / 1024L + " kB");
+        usedMemoryKb = (runtime.totalMemory() - runtime.freeMemory()) / 1024L; //calculate memory
     }
 
     private static Move[] generateRandomMovesOrder() {

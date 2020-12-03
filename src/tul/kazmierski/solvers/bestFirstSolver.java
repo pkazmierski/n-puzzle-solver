@@ -7,6 +7,7 @@ import java.util.*;
 import static tul.kazmierski.Util.*;
 
 public class bestFirstSolver implements PuzzleSolverHeuristic {
+    private long freeMem = 0;
     @Override
     public State solveWithHeuristic(ArrayList<Integer> initialBoard, Heuristic heuristic) {
         PriorityQueue<RankedState> candidates = new PriorityQueue<>(rankedStateComparator);
@@ -17,11 +18,24 @@ public class bestFirstSolver implements PuzzleSolverHeuristic {
                                        heuristic.getRank(initialBoard)));
 
         while (candidates.size() > 0) {
+            Main.endTime = System.currentTimeMillis();
+            if(Main.endTime - Main.startTime > 60000) {
+                Main.failReason = "OUT_OF_TIME";
+                setUsedMemory();
+                return null;
+            }
+            freeMem = Runtime.getRuntime().freeMemory();
+            if(freeMem < 1048576L) { //lest than 1 MB
+                Main.failReason = "OUT_OF_MEMORY";
+                setUsedMemory();
+                return null;
+            }
+
             State current = candidates.poll().state;
             Main.visitedCounter++;
 
             if (checkIfSolved(current.board)) {
-                printMemory();
+                setUsedMemory();
                 return current;
             }
 

@@ -19,11 +19,23 @@ public class bfsSolver implements PuzzleSolverOrder {
         candidates.add(new State(initialBoard, null, null));
 
         while (candidates.size() > 0) {
+            Main.endTime = System.currentTimeMillis();
+            if(Main.endTime - Main.startTime > 60000) {
+                Main.failReason = "OUT_OF_TIME";
+                setUsedMemory();
+                return null;
+            }
+            if(Runtime.getRuntime().freeMemory() < 10L * 1048576L) { //lest than 20 MB
+                Main.failReason = "OUT_OF_MEMORY";
+                setUsedMemory();
+                return null;
+            }
+
             State current = candidates.poll();
             Main.visitedCounter++;
 
             if (checkIfSolved(current.board)) {
-                printMemory();
+                setUsedMemory();
                 return current;
             }
 

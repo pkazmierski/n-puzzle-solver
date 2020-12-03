@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import static tul.kazmierski.Util.*;
 
 public class iddfsSolver implements PuzzleSolverOrder {
+    private boolean fail = false;
+
     private class SpecialState {
         State state;
         boolean remaining; //does this state have children?
@@ -27,8 +29,10 @@ public class iddfsSolver implements PuzzleSolverOrder {
         State initialState = new State(initialBoard, null, null);
         for (int maxDepth = 0; ; maxDepth++) {
             State result = DLS(initialState, maxDepth);
+            if(fail)
+                return null;
             if (result != null) {
-                printMemory();
+                setUsedMemory();
                 return result;
             }
         }
@@ -40,6 +44,21 @@ public class iddfsSolver implements PuzzleSolverOrder {
         candidates.add(start);
 
         while (true) {
+            Main.endTime = System.currentTimeMillis();
+            if(Main.endTime - Main.startTime > 60000) {
+                Main.failReason = "OUT_OF_TIME";
+                fail = true;
+                setUsedMemory();
+                return null;
+            }
+
+            if(Runtime.getRuntime().freeMemory() < 10L * 1048576L) { //lest than 20 MB
+                Main.failReason = "OUT_OF_MEMORY";
+                fail = true;
+                setUsedMemory();
+                return null;
+            }
+
             State current = candidates.pollLast();
             Main.visitedCounter++;
 

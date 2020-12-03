@@ -20,12 +20,24 @@ public class AStarSolver implements PuzzleSolverHeuristic {
                 heuristic.getRank(initialBoard)));
 
         while (candidates.size() > 0) {
+            Main.endTime = System.currentTimeMillis();
+            if(Main.endTime - Main.startTime > 60000) {
+                Main.failReason = "OUT_OF_TIME";
+                setUsedMemory();
+                return null;
+            }
+            if(Runtime.getRuntime().freeMemory() < 1048576L) { //lest than 1 MB
+                Main.failReason = "OUT_OF_MEMORY";
+                setUsedMemory();
+                return null;
+            }
+
             RankedState currentRankedState = candidates.poll();
             State current = currentRankedState.state;
             Main.visitedCounter++;
 
             if (checkIfSolved(current.board)) {
-                printMemory();
+                setUsedMemory();
                 return current;
             }
 

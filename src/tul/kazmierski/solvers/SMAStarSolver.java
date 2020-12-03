@@ -21,6 +21,18 @@ public class SMAStarSolver implements PuzzleSolverHeuristic {
         int minDepth = 0;
 
         while (candidates.size() > 0) {
+            Main.endTime = System.currentTimeMillis();
+            if(Main.endTime - Main.startTime > 60000) {
+                Main.failReason = "OUT_OF_TIME";
+                setUsedMemory();
+                return null;
+            }
+            if(Runtime.getRuntime().freeMemory() < 1048576L) { //lest than 1 MB
+                Main.failReason = "OUT_OF_MEMORY";
+                setUsedMemory();
+                return null;
+            }
+
             RankedState currentRankedState = candidates.poll();
             State current = currentRankedState.state;
             Main.visitedCounter++;
@@ -35,7 +47,7 @@ public class SMAStarSolver implements PuzzleSolverHeuristic {
                 State nextState = new State(nextBoard, current, move);
                 RankedState nextRankedState;
                 if (checkIfSolved(nextBoard)) {
-                    printMemory();
+                    setUsedMemory();
                     return nextState;
                 }
                 else {
